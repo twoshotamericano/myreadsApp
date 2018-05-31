@@ -6,6 +6,7 @@ import {BrowserRouter} from 'react-router-dom'
 
 ReactDOM.render(
   <BrowserRouter>
+    <h1>Here is some text </h1>
     <App />
   </BrowserRouter>,
   document.getElementById('root'))
