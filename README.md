@@ -1,4 +1,4 @@
-# MyReads Project
+# MyReads Project (01 June 2018)
 
 This was my final assessment project for the Udacity React Fundamentals course. It was written in node.js using the React package. I used the create-react-app package to create a template for the project. This helped me prototype the project without needing to run babel and browserify...
 
