@@ -7,71 +7,71 @@ import Search from './Search.js'
 import BookShelf from './BookShelf.js'
 import SimpleStorage from "react-simple-storage";
 
+
+
 class BooksApp extends React.Component {
   constructor(props){
       super(props);
       this.state={
-        booksOnShelf:{},
-        books:[],
+        mappingBooksToShelfs:{"read":[],"toberead":[],"wanttoread":[],"none":[]},
+        booksToBeDisplayed:[]
       };
-      this.updateShelfs=this.updateShelfs.bind(this);
-      this.addBooks=this.addBooks.bind(this);
   }
 
+  shelfs=["none","read","toberead","wanttoread"];
 
-  updateShelfs=(object)=>{
+  updateState=(bookObject,mapObject)=>{
+    console.log('bookObject',bookObject);
+    console.log('mapObject',mapObject)
+
+    this.setState((prevState)=>({
+      booksToBeDisplayed: prevState.booksToBeDisplayed.concat(bookObject),
+      mappingBooksToShelfs:mapObject
+    }))
+  }
+
+  updateMappingToShelfs=(e)=>{
     /*Callback function used in the Search Component;
       When the search updates a book's shelf, then this call back is used;
     */
-    const Component=this;
+    const id=e.target.options[e.target.selectedIndex].value;
+    const oldShelf=!!e.target.id ? e.target.id : 'none';
+    const newShelf=e.target.options[e.target.selectedIndex].innerHTML;
+    const previousMapping=this.state.mappingBooksToShelfs;
+    const nextMapping=previousMapping;
+    const flag=nextMapping[oldShelf].findIndex(element=>element===id);
 
-    Component.setState({
-      booksOnShelf:object,
+    nextMapping[newShelf].splice(0,0,id);
+    nextMapping[oldShelf].splice(flag,1);
+
+
+
+    this.setState({
+      mappingBooksToShelfs:nextMapping
     })
-  };
 
-  addBooks=(array)=>{
+  }
+
+  addBooks=(object)=>{
       /*Callback function used in the Search Component
         It is called when the user selects a book onto a shelf in the Search component;
       */
     const Component=this;
+    const newBook=object[0];
+    console.log('newBook',object);
 
-    Component.setState((prevState)=>({
-      books:prevState.books.concat([array[0]]),
-    })
+    const bookAlreadyLogged=this.state.booksToBeDisplayed.filter(book=>book["id"]=object["id"])
+    console.log(!!this.state.booksToBeDisplayed.filter(book=>book["id"]=newBook["id"]))
+    !!this.state.booksToBeDisplayed.filter(book=>book["id"]=newBook["id"])
+      ? Component.setState((prevState)=>({
+          booksToBeDisplayed:prevState.books.concat([object]),
+        }))
+      : null
 
-  )
 
   };
 
-  updateBookShelfs=(e)=>{
-      /*Callback function used in the BookShelf component
-        Called whenever a user changes the shelf of a book
-      */
-      e.preventPropagation;
-      e.preventDefault;
 
-      const Component=this;
-      let searchTerm={shelf:e.target.options[e.target.selectedIndex].innerHTML};
-      let id=e.target.options[e.target.selectedIndex].value;
-      let updatedBook=[];
-
-      const shelfs=inputs.updateBooks(id,searchTerm).then(
-          function(response){
-              Component.setState((prevState)=>({
-                  books:inputs.updateBook(prevState.books,id,searchTerm.shelf),
-                  booksOnShelf:response
-                  }
-                  )
-              );
-
-          },
-          function(error){
-              console.log("failed",error);
-          }
-      )
-
-  }
 
   render() {
 
@@ -82,8 +82,9 @@ class BooksApp extends React.Component {
                   path='/search'
                   render={()=>(
                     <Search
-                      updateShelfs={this.updateShelfs}
-                      addBooks={this.addBooks}
+                      updateState={this.updateState}
+                      addBooks={this.addBookToBeDisplayed}
+                      mappingBooksToShelfs={this.state.mappingBooksToShelfs}
                       />)}
                 />
 
@@ -91,10 +92,10 @@ class BooksApp extends React.Component {
                   exact path='/'
                   render={()=>(
                     <BookShelf
-                        books={this.state.books}
-                        shelfs={inputs.shelfs.slice(1,4)}
-                        map={this.state.booksOnShelf}
-                        func={this.updateBookShelfs}
+                        books={this.state.booksToBeDisplayed}
+                        shelfs={this.shelfs.slice(1)}
+                        map={this.state.mappingBooksToShelfs}
+                        func={this.updateMappingToShelfs}
                     />
                       )}
                 />

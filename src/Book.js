@@ -11,7 +11,7 @@ class Book extends Component{
       <div className="book">
         <div className="book-top">
           <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: url}}></div>
-            <BookShelfChanger bookID={id} shelf={shelf} func={func}/>
+            <BookShelfChanger bookID={id} shelf={shelf} func={func} bookDetails={bookDetails}/>
           </div>
         <div className="book-title">{title}</div>
         <div className="book-authors">{author}</div>

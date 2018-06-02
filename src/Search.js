@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Shelf from './Shelf.js'
+import Book from './Book.js'
 import * as inputs from './inputs.js'
 import SearchBar from './SearchBar.js'
 
@@ -8,14 +8,33 @@ class Search extends Component {
 
     constructor(props){
       super(props);
-      this.state={books:[]};
+      this.state={
+        books:[],
+        mappingBooksToShelfs:this.props.mappingBooksToShelfs,
+      };
+    };
+
+    getShelf=(id,object)=>{
+      const bookId=id;
+      const mappingBooksToShelfs=object;
+      let shelf=null;
+
+      for (var obj in mappingBooksToShelfs){
+        mappingBooksToShelfs.hasOwnProperty(obj)
+          ? mappingBooksToShelfs[obj].includes(id)
+            ? shelf=`${obj}`
+            : null
+          : null
+      }
+
+      return shelf
+
     };
 
     updateState=(e)=>{
         /*  This call back function responds to users adding a new search term;
             The target is the inputs box in Search Bar component
         */
-
         let searchTerm={query:e.target.value};
         var component=this;
         let books=[];
@@ -48,46 +67,51 @@ class Search extends Component {
     };
 
     updateShelfs=(e)=>{
-        /*  This call back function responds to users setting a new shelf for a book;
-            The target is the "bookshelfchanger" select box
-        */
-        e.preventDefault;
-        const Component=this;
-        let searchTerm={shelf:e.target.options[e.target.selectedIndex].innerHTML};
-        let id=e.target.options[e.target.selectedIndex].value;
-        let updatedBook=[];
+    /*Callback function used in the Search Component;
+      When the search updates a book's shelf, then this call back is used;
+    */
+    const id=e.target.options[e.target.selectedIndex].value;
+    const oldShelf=!!e.target.id ? e.target.id : 'none';
+    const newShelf=e.target.options[e.target.selectedIndex].innerHTML;
+    const previousMapping=this.state.mappingBooksToShelfs;
+    const nextMapping=previousMapping;
+    const bookDetails=this.state.books
+    const filteredBooks=bookDetails.filter(book=>book.id===id)
 
-        /*  The state of the component is updated via the updateBooks api call;
-            When the promise is resolved the state of the component is updated;
-            The addBooks callback function updates the state of the App component;
-        */
-        const shelfs=inputs.updateBooks(id,searchTerm).then(
-            function(response){
-                console.log(response);
-                Component.setState((prevState)=>({
-                    books:inputs.updateBook(prevState.books,id,searchTerm.shelf),
-                    }
-                    )
-                );
-                Component.props.updateShelfs(response);
-                updatedBook=inputs.getBooksById(id,Component.state.books)
-                Component.props.addBooks(updatedBook)
-            },
-            function(error){
-                console.log("failed",error);
-            }
-        )
+    nextMapping[newShelf].splice(0,0,id);
 
-    }
+    if (nextMapping[oldShelf].length!==0)
+      {
+        const flag=nextMapping[oldShelf].findIndex(element=>element===id);
+        nextMapping[oldShelf].splice(flag,1)
+      }
+
+    this.setState({
+      mappingBooksToShelfs:nextMapping
+    })
+
+    this.props.updateState(filteredBooks,this.state.mappingBooksToShelfs)
+
+  }
 
     render(){
         let books=this.state.books;
+        let book=books[0]
+        !!book ? console.log(this.getShelf(book.id,this.state.bookMappingToShelfs)) : null
 
           return (
             <div className="search-books">
               <SearchBar updateState={this.updateState}/>
-              <Shelf name={"Search Results"} books={this.state.books} func={this.updateShelfs}/>
-
+              <div className="bookshelf">
+                <h2 className="bookshelf-title">Search</h2>
+                <div className="bookshelf-books">
+                  <ol className="books-grid">
+                    {books.map((book,idx)=>(
+                      <Book key={idx} shelf={this.getShelf(book.id,this.state.mappingBooksToShelfs)} bookDetails={book}  func={this.updateShelfs}/>
+                    ))}
+                  </ol>
+                </div>
+              </div>
             </div>
           )
         }

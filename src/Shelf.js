@@ -12,7 +12,7 @@ class Shelf extends Component{
         <div className="bookshelf-books">
           <ol className="books-grid">
             {books.map((book,idx)=>(
-              <Book key={idx} shelf={book.shelf} bookDetails={book}  func={func}/>
+              <Book key={idx} shelf={name} bookDetails={book}  func={func}/>
             ))}
           </ol>
         </div>
