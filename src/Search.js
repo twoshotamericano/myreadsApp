@@ -68,7 +68,7 @@ class Search extends Component {
 
     updateShelfs=(e)=>{
     /*Callback function used in the Search Component;
-      When the search updates a book's shelf, then this call back is used;
+      When the user updates a book's shelf, then this call back is used;
     */
     const id=e.target.options[e.target.selectedIndex].value;
     const oldShelf=!!e.target.id ? e.target.id : 'none';
@@ -90,7 +90,9 @@ class Search extends Component {
       mappingBooksToShelfs:nextMapping
     })
 
-    this.props.updateState(filteredBooks,this.state.mappingBooksToShelfs)
+    oldShelf==='none'
+      ? this.props.updateState(filteredBooks,this.state.mappingBooksToShelfs)
+      : null
 
   }
 

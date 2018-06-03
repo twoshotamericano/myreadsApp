@@ -4,12 +4,12 @@ import * as inputs from './inputs.js'
 class BookShelfChanger extends Component{
   render(){
     const bookID=this.props.bookID;
-    const shelfs=["read","toberead","wanttoread"];
-    const shelfs2=["none","read","toberead","wanttoread"]
+    const shelfs=["read","reading","wanttoread"];
+    const shelfs2=["none","read","reading","wanttoread"]
     const shelf=this.props.shelf;
     const optionArray=[]
 
-    /*These guard functions handle the case if a book does not have a shelf property*/
+    /*These guard functions could be refactored*/
 
     !!this.props.shelf && (shelfs.map((shelf,idx)=>{
 

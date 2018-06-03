@@ -20,7 +20,9 @@ class BookShelf extends Component {
                   shelfs.map((shelf, idx)=>{
                     /*This gives the books on a particular shelf*/
                     const filteredBookIds=map[shelf];
-                    const filteredBooks=books.filter(book=>filteredBookIds.includes(book.id))
+                    const filteredBooks=!!filteredBookIds
+                      ? books.filter(book=>filteredBookIds.includes(book.id))
+                      : []
 
                     return (
                       <Shelf key={idx} name={shelf} books={filteredBooks} func={func}/>
